@@ -6,6 +6,7 @@ from PIL import Image
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
+import torch
 
 # --- Configuration ---
 MODEL_NAME = os.environ.get("MODEL_NAME", "clip-ViT-B-32")
@@ -16,8 +17,15 @@ MODEL_CACHE_DIR = os.environ.get("TRANSFORMERS_CACHE", "/app/model_cache")
 # --- Initialization ---
 # Initialize the model globally to load it once on startup
 try:
+    # 1. Check if CUDA (GPU) is available
+    if torch.cuda.is_available():
+        device = 'cuda'
+        print("GPU is available. Using GPU.")
+    else:
+        device = 'cpu'
+        print("GPU not available. Using CPU.")
     # The model will be downloaded to MODEL_CACHE_DIR if not present
-    model = SentenceTransformer(MODEL_NAME, cache_folder=MODEL_CACHE_DIR)
+    model = SentenceTransformer(MODEL_NAME, cache_folder=MODEL_CACHE_DIR, device=device)
     print(f"Successfully loaded model: {MODEL_NAME} from {MODEL_CACHE_DIR}")
 except Exception as e:
     print(f"Error loading model {MODEL_NAME}: {e}")
