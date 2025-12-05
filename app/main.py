@@ -88,7 +88,7 @@ async def embed_image(request: ImageEmbedRequest):
     if not request.image_urls:
         return EmbeddingResponse(embeddings=[], model=MODEL_NAME)
 
-    images = []s
+    images = []
     for url in request.image_urls:
         # Download and process image
         image = get_image_from_url(url)
