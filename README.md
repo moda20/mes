@@ -33,7 +33,7 @@ The service uses the following environment variables:
 
 ## 💡 API Endpoints
 
-The service exposes two primary endpoints for generating embeddings.
+The service exposes three primary endpoints for generating embeddings.
 
 ### 1. Embed Text
 
@@ -80,6 +80,44 @@ The service exposes two primary endpoints for generating embeddings.
         [0.789, 0.101, ...]
       ],
       "model": "clip-ViT-B-32"
+    }
+    ```
+
+### 3. OpenAI-Compatible Embeddings
+
+*   **Endpoint:** `POST /v1/embeddings`
+*   **Description:** Generates embeddings for images using an OpenAI-compatible API interface.
+*   **Request Body (`application/json`):**
+    ```json
+    {
+      "model": "clip-ViT-B-32",
+      "input": [
+        "https://example.com/image1.jpg",
+        "https://example.com/image2.png"
+      ]
+    }
+    ```
+*   **Response Body (`application/json`):**
+    ```json
+    {
+      "object": "list",
+      "data": [
+        {
+          "object": "embedding",
+          "embedding": [0.123, 0.456, ...],
+          "index": 0
+        },
+        {
+          "object": "embedding",
+          "embedding": [0.789, 0.101, ...],
+          "index": 1
+        }
+      ],
+      "model": "clip-ViT-B-32",
+      "usage": {
+        "prompt_tokens": 0,
+        "total_tokens": 0
+      }
     }
     ```
 
