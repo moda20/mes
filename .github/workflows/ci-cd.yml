@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - diskspace-github-runner-fix
+      - master
 
 jobs:
   build-and-push:
