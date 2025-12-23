@@ -3,13 +3,17 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master
+      - diskspace-github-runner-fix
 
 jobs:
   build-and-push:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
+      - name: Free disk space
+        run: | 
+          sudo swapoff /swapfile \ 
+          sudo rm -rf /swapfile /usr/share/dotnet /usr/local/lib/android /opt/ghc
       - name: Checkout code
         uses: actions/checkout@v3
 
