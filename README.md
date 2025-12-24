@@ -21,15 +21,38 @@ The service uses the following environment variables:
 
 ### Running the Service
 
+#### Running a single instance
+
 1.  **Build and Run:** Execute the following command in the root directory:
 
     ```bash
-    docker compose up --build -d
+    docker compose -f docker/compose.yml up --build -d
     ```
 
-    The first run will download the `clip-ViT-B-32` model by default (approx. 600MB) and store it in the persistent `model_cache` volume.
+    The first run will download the `clip-ViT-B-32` model by default (or the model you put in the env variables) (approx. 600MB) and store it in the persistent `model_cache` volume.
 
-2.  **Access the API:** The service will be available at `http://localhost:8000`. You can view the interactive documentation (Swagger UI) at `http://localhost:8000/docs`.
+2.  **Access the API:** The service will be available at `http://localhost:8000`.
+
+#### Running a load-balanced n number of instances
+
+The load balancing is handled by nginx and a set of replica containers are created. calling the nginx server would automatically choose the target instance.
+
+**Note :** In order to have a single downloading instance of the default model, it's better to run the single instance compose file to populate the volume with the model files.
+After that all instances will just read and load their copy of the model into VRAM. 
+
+**Note :** Ensure that you have enough VRAM to hold the model copies, otherwise some instances might crash or spill into system RAM.
+
+1.  **Build and Run:** Execute the following command in the root directory:
+
+    ```bash
+    docker compose -f docker/compose_load_balanced.yml up --build -d
+    ```
+    This will also download the default model, 
+
+2.  **Access the API:** The service will be available at `http://localhost:8004`. 
+
+
+
 
 ## 💡 API Endpoints
 
