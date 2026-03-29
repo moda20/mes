@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free disk space
+        run: |
+          echo '===== Before ====='
+          df -h
+          sudo rm -rf /opt/hostedtoolcache/go
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/lib/google-cloud-sdk
+          sudo rm -rf /usr/local/julia*
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/share/dotnet
+          sudo apt-get clean
+          echo '===== After ====='
+          df -h
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "tag_name=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/mes:latest
+            ghcr.io/${{ github.repository_owner }}/mes:${{ steps.get_version.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/mes:${{ github.sha }}
+          platforms: linux/amd64,linux/arm64
+
+      - name: Create release notes with Docker image info
+        id: release_notes
+        run: |
+          cat << EOF > release_notes.md
+          ## Docker Image
+
+          This release includes the Docker image:
+
+          \`\`\`
+          ghcr.io/${{ github.repository_owner }}/mes:latest
+          ghcr.io/${{ github.repository_owner }}/mes:${{ steps.get_version.outputs.version }}
+          \`\`\`
+
+          Pull the latest image:
+          \`\`\`bash
+          docker pull ghcr.io/${{ github.repository_owner }}/mes:latest
+          \`\`\`
+
+          Pull a specific version:
+          \`\`\`bash
+          docker pull ghcr.io/${{ github.repository_owner }}/mes:${{ steps.get_version.outputs.version }}
+          \`\`\`
+
+          ## What's Changed
+
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release_notes.md
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          name: Release v${{ steps.get_version.outputs.version }}
+          tag_name: ${{ steps.get_version.outputs.tag_name }}
+          target_commitish: ${{ github.sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dump disk usage on failure
+        if: failure()
+        run: |
+          df -h
+          du -xh / --max-depth=3 2>/dev/null | sort -h | tail -50
