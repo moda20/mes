@@ -85,8 +85,6 @@ jobs:
           docker pull ghcr.io/${{ github.repository_owner }}/mes:${{ steps.get_version.outputs.version }}
           \`\`\`
 
-          ## What's Changed
-
           EOF
 
       - name: Create GitHub Release
