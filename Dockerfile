@@ -1,10 +1,11 @@
 
 FROM python:3.10-slim AS builder
 
+ENV TORCH_VERSION=2.4
 # Install dependencies
 COPY app/requirements.txt .
 RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
-
+RUN pip install --prefix=/install torch==TORCH_VERSION
 
 FROM python:3.10-slim
 

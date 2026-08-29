@@ -4,4 +4,3 @@ sentence-transformers
 Pillow
 requests
 numpy
-torch
