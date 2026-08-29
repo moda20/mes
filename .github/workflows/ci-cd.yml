@@ -45,24 +45,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          build-args: |
-            "TORCH_VERSION=2.4"
           tags: |
-            ghcr.io/${{ github.repository_owner }}/mes-torch-2.4:latest
             ghcr.io/${{ github.repository_owner }}/mes:latest
-            ghcr.io/${{ github.repository_owner }}/mes:${{ github.sha }}
-          platforms: linux/amd64,linux/arm64
-
-      - name: Build and push Docker image for torch 2.3
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          build-args: |
-            "TORCH_VERSION=2.3"
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/mes-torch-2.3:latest
             ghcr.io/${{ github.repository_owner }}/mes:${{ github.sha }}
           platforms: linux/amd64,linux/arm64
 

@@ -1,11 +1,16 @@
 
 FROM python:3.10-slim AS builder
 
-ARG TORCH_VERSION=2.4
+ARG TORCH_VERSION
 # Install dependencies
 COPY app/requirements.txt .
 RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
-RUN pip install --prefix=/install torch==${TORCH_VERSION}
+
+RUN if [ -n "$TORCH_VERSION" ]; then \
+      pip install "torch==$TORCH_VERSION"; \
+    else \
+      pip install torch; \
+    fi
 
 FROM python:3.10-slim
 
