@@ -7,8 +7,8 @@ ARG CUDA_VERSION
 COPY app/requirements.txt .
 RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
 
-RUN if [ -n "CUDA_VERSION" ]; then \
-      pip install torch --index-url https://download.pytorch.org/whl/cu${CUDA_VERSION}; \
+RUN if [ -n "$CUDA_VERSION" ]; then \
+      pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu$CUDA_VERSION \
     else \
       pip install torch; \
     fi
