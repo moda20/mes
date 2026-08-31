@@ -8,7 +8,8 @@ COPY app/requirements.txt .
 RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
 
 RUN if [ -n "$CUDA_VERSION" ]; then \
-      pip install torch --no-build-isolation --index-url "https://download.pytorch.org/whl/cu${CUDA_VERSION}" --extra-index-url https://pypi.org/simple; \
+      pip install torch --no-build-isolation --index-url "https://download.pytorch.org/whl/cu${CUDA_VERSION}"; \
+      pip install flit-core; \
     else \
       pip install torch; \
     fi
