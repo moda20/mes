@@ -6,10 +6,10 @@ ARG CUDA_VERSION
 COPY app/requirements.txt .
 
 RUN if [ -n "$CUDA_VERSION" ]; then \
-      pip install torch --prefix=/install --no-build-isolation --index-url "https://download.pytorch.org/whl/cu${CUDA_VERSION}"; \
-      pip install --prefix=/install flit_core; \
+        pip install --upgrade pip && \
+        pip install torch --prefix=/install --index-url "https://download.pytorch.org/whl/cu${CUDA_VERSION}"; \
     else \
-      pip install --prefix=/install torch; \
+        pip install --prefix=/install torch; \
     fi
 
 RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
