@@ -1,16 +1,15 @@
 
 FROM python:3.10-slim AS builder
 
-ARG TORCH_VERSION
 ARG CUDA_VERSION
 # Install dependencies
 COPY app/requirements.txt .
 
 RUN if [ -n "$CUDA_VERSION" ]; then \
-      pip install torch --no-build-isolation --index-url "https://download.pytorch.org/whl/cu${CUDA_VERSION}"; \
-      pip install flit_core; \
+      pip install torch --prefix=/install --no-build-isolation --index-url "https://download.pytorch.org/whl/cu${CUDA_VERSION}"; \
+      pip install --prefix=/install flit_core; \
     else \
-      pip install torch; \
+      pip install --prefix=/install torch; \
     fi
 
 RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
