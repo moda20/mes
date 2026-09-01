@@ -12,7 +12,7 @@ RUN if [ -n "$CUDA_VERSION" ]; then \
         pip install --prefix=/install torch; \
     fi
 
-RUN pip install --prefix=/install --no-cache-dir -r requirements.txt
+RUN PYTHONPATH=/install/lib/python3.10/site-packages \pip install --prefix=/install --no-cache-dir -r requirements.txt
 
 FROM python:3.10-slim
 
